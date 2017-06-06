@@ -1,107 +1,113 @@
-#include <iostream>
-#include <stdlib.h>
-#include <conio.h>
-#include <stdio.h>
+#include<iostream>
 using namespace std;
-
-int N = 0; // so luong test case
-int m,k,left1,right1,mid; //m la so luong cuon sach, k so phan can chia
-int page[10000]; // so luong trang cua moi cuon
-int p[10000];
-int index[10000];
-int ValidIndex[10000];     // ket qua cuoi cung
-
-
+ 
+const int MAX = 10000;
+ 
+int M, K;                // luu so luong cuon sach va so phan can chia
+int Left,Right, mid;        
+int Page[MAX];           // luu so luong trang sach cua moi cuon sach
+int Index[MAX];          // mang luu tru co cac phan tu dau tien cua moi phan
+int ValidIndex[MAX];     // ket qua cuoi cung
+ 
+// cap nhat lai tong so phan tu sao cho tong so phan tu khong lon hon mid
 void Update(int id)
 {
-	int sum = 0,t =index[id];
-	for (int i =index[id + 1] - 1; i >= t;i--)
-	{
-		sum += page[i];
-		if(sum 	== mid)
-		{
-			index[id] = i;
-			break;
-		}
-		else if(sum > mid)
-		{
-			index[id] = i+1;
-			break;
-		}
-	}
+    int sum = 0, t = Index[id];
+ 
+    for(int i = Index[id + 1] - 1; i >= t; i--)
+    {
+        sum += Page[i];
+        
+        if(sum == mid)
+        {
+            Index[id] = i;
+            break;
+        }else if(sum > mid)
+        {
+            Index[id] = i + 1;
+            break;
+        }
+    }
 }
-
+ //kiem tra xem voi so luong lon nhat cua cac phan tu la mid
+// co hop ly hay khong
 bool IsValid()
 {
-	for(int i =0; i< k;i++)
-	{
-		index[i] =i;
-		index[k] = m;
-		
-		//cap nhat lai tung phan tu
-		for(int i = k-1;i >= 0;i--)
-		{
-			Update(i);
-		}
-		
-		//neu sau
-		if(index[0] > 0) return false;
-		
-		return true;
-	}
+    for(int i = 0; i < K; i++)
+        Index[i] = i;
+    Index[K] = M;
+ 
+    // cap nhat lai phan tu
+    for(int i = K - 1; i >= 0; i--)
+        Update(i);
+ 
+    // Neu khong
+    if (Index[0] > 0) return false;
+ 
+    return true;
 }
-
+ 
 int main()
 {
-	cin >> N;
-	for(int i =0;i<N;i++)
-	{
-		int max_Page = 0; //Tim cuon sach co nhieu trang nhat
-		int sum_Page = 0; // tim tong so trang sach
-		
-		cin>>m>>k;
-		for(int j = 0; j< m;j++)
-		{
-			cin>>p[j];
-			
-			if(p[j]>max_Page) max_Page = p[j];
-			sum_Page += p[j];
-		}
-		left1 = max_Page;
-		right1 = sum_Page;
-		
-		// Trien khai thuat toan chia de tri
-		while(left1 < right1)
-		{
-			mid = (left1 + right1)/2;
-			if (IsValid())
+    int T;
+    cin >> T;
+ 
+    for(int tc = 0; tc < T; tc++)
+    {
+        int max_page = 0;        // tim ra cuon sach co so trang nhieu nhat
+        int sum_page = 0;        // Tim tong so trang
+        
+        cin >> M >> K;
+ 
+        for(int i = 0; i < M; i++)
+        {
+            cin >> Page[i];
+ 
+            if(Page[i] > max_page) max_page = Page[i];
+            sum_page += Page[i];
+        }
+        // khi chia ra thanh cac phan thi tong lon nhat cua cac phan 
+		// se nam trong khoang Left = max-page
+		// right = sum_page 
+        Left  = max_page;
+        Right = sum_page;
+ 
+        //trien khai thuat toan chia de tri
+        while (Left < Right)
+        {
+            mid = (Left + Right) / 2;
+            
+            if (IsValid())
             {
-                right1 = mid;
-                
-                // ta dung mang luu lai chi so giua cac phan tu
+                Right = mid;
+                // ta dung mang de luu lai chi so cua cac phan tu
                 // de phan chia cac phan
-                for(int i = 0; i < k; i++)
-                    ValidIndex[i] = index[i];
+                for(int i = 0; i < K; i++)
+                    ValidIndex[i] = Index[i];
             }
             else
             {
-                left1 = mid + 1;
+                Left = mid + 1;
             }
-		}
-		// In ra ket qua
-        for(int i = 0; i < k - 1; i++)
+        }
+ 
+        // In ra ket qua
+        for(int i = 0; i < K - 1; i++)
         {
             for(int j = ValidIndex[i]; j < ValidIndex[i+1]; j++)
-                cout << page[j] << " ";
+                cout << Page[j] << " ";
             cout << "/ ";
         }
         
-         for(int i = ValidIndex[k-1]; i < m; i++)
+        for(int i = ValidIndex[K-1]; i < M; i++)
         {
-            cout << page[i];
-            if(i == m-1) break;
+            cout << Page[i];
+            if(i == M-1) break;
             cout << " ";
         }
-	}
-	
+ 
+        cout << endl;
+    }
+ 
+    return 0;
 }
